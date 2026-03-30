@@ -11,4 +11,10 @@ crate-type = ["cdylib"]
 [dependencies]
 faer = "0.24.0"
 numpy = "0.28.0"
-pyo3 = "0.28.2"
+pyo3 = { version = "0.28.2", features = [
+    "num-complex",
+    "experimental-inspect",
+] }
+
+[dev-dependencies]
+pyo3-introspection = "0.28.2"
