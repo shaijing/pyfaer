@@ -3,6 +3,7 @@ mod array;
 mod cast;
 mod dtype;
 mod mat;
+mod numpy;
 mod ufunc;
 /// A Python module implemented in Rust.
 #[pymodule]

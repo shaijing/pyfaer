@@ -1,3 +1,29 @@
+use crate::array::{FaerArray, FaerArrayRef};
+
+// 跨类型转换时才需要拥有新分配的 Mat
+pub enum CastResult<'a> {
+    Borrowed(FaerArrayRef<'a>),
+    Owned(FaerArray),
+}
+
+impl CastResult<'_> {
+    pub fn as_ref(&self) -> FaerArrayRef<'_> {
+        match self {
+            Self::Borrowed(r) => match r {
+                FaerArrayRef::F32(m) => FaerArrayRef::F32(*m),
+                FaerArrayRef::F64(m) => FaerArrayRef::F64(*m),
+                FaerArrayRef::C32(m) => FaerArrayRef::C32(*m),
+                FaerArrayRef::C64(m) => FaerArrayRef::C64(*m),
+            },
+            Self::Owned(a) => match a {
+                FaerArray::F32(m) => FaerArrayRef::F32(m.as_ref()),
+                FaerArray::F64(m) => FaerArrayRef::F64(m.as_ref()),
+                FaerArray::C32(m) => FaerArrayRef::C32(m.as_ref()),
+                FaerArray::C64(m) => FaerArrayRef::C64(m.as_ref()),
+            },
+        }
+    }
+}
 // cast.rs
 
 // 针对实数的通用转换 (利用泛型减少重复代码)

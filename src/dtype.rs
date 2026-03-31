@@ -7,21 +7,28 @@ use std::sync::LazyLock; // 引入标准库的 LazyLock
 #[pyclass(eq, skip_from_py_object)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum FaerDType {
-    U32,
-    U64,
-    I32,
-    I64,
+    // U32,
+    // U64,
+    // I32,
+    // I64,
     F32,
     F64,
     C32,
     C64,
 }
+
+impl Default for FaerDType {
+    fn default() -> Self {
+        FaerDType::F32
+    }
+}
+
 /// 全集，用于格搜索
-const ALL_TYPES: [FaerDType; 8] = [
-    FaerDType::U32,
-    FaerDType::U64,
-    FaerDType::I32,
-    FaerDType::I64,
+const ALL_TYPES: [FaerDType; 4] = [
+    // FaerDType::U32,
+    // FaerDType::U64,
+    // FaerDType::I32,
+    // FaerDType::I64,
     FaerDType::F32,
     FaerDType::F64,
     FaerDType::C32,
@@ -72,34 +79,34 @@ impl FaerDType {
     pub fn capability(self) -> Capability {
         match self {
             //                               cmplx  float  sign   bits  mantissa
-            Self::U32 => Capability {
-                is_complex: false,
-                is_float: false,
-                is_signed: false,
-                bits: 32,
-                int_mantissa_bits: 32,
-            },
-            Self::U64 => Capability {
-                is_complex: false,
-                is_float: false,
-                is_signed: false,
-                bits: 64,
-                int_mantissa_bits: 64,
-            },
-            Self::I32 => Capability {
-                is_complex: false,
-                is_float: false,
-                is_signed: true,
-                bits: 32,
-                int_mantissa_bits: 31,
-            },
-            Self::I64 => Capability {
-                is_complex: false,
-                is_float: false,
-                is_signed: true,
-                bits: 64,
-                int_mantissa_bits: 63,
-            },
+            // Self::U32 => Capability {
+            //     is_complex: false,
+            //     is_float: false,
+            //     is_signed: false,
+            //     bits: 32,
+            //     int_mantissa_bits: 32,
+            // },
+            // Self::U64 => Capability {
+            //     is_complex: false,
+            //     is_float: false,
+            //     is_signed: false,
+            //     bits: 64,
+            //     int_mantissa_bits: 64,
+            // },
+            // Self::I32 => Capability {
+            //     is_complex: false,
+            //     is_float: false,
+            //     is_signed: true,
+            //     bits: 32,
+            //     int_mantissa_bits: 31,
+            // },
+            // Self::I64 => Capability {
+            //     is_complex: false,
+            //     is_float: false,
+            //     is_signed: true,
+            //     bits: 64,
+            //     int_mantissa_bits: 63,
+            // },
             Self::F32 => Capability {
                 is_complex: false,
                 is_float: true,
@@ -208,17 +215,28 @@ impl FaerDType {
     pub fn bits(&self) -> u32 {
         self.capability().bits
     }
-
+    pub fn name(&self) -> &'static str {
+        match self {
+            // Self::U32 => "u32",
+            // Self::U64 => "u64",
+            // Self::I32 => "i32",
+            // Self::I64 => "i64",
+            Self::F32 => "f32",
+            Self::F64 => "f64",
+            Self::C32 => "c32",
+            Self::C64 => "c64",
+        }
+    }
     pub fn __repr__(&self) -> &'static str {
         match self {
-            Self::U32 => "DType.U32",
-            Self::U64 => "DType.U64",
-            Self::I32 => "DType.I32",
-            Self::I64 => "DType.I64",
-            Self::F32 => "DType.F32",
-            Self::F64 => "DType.F64",
-            Self::C32 => "DType.C32",
-            Self::C64 => "DType.C64",
+            // Self::U32 => "u32",
+            // Self::U64 => "u64",
+            // Self::I32 => "i32",
+            // Self::I64 => "i64",
+            Self::F32 => "f32",
+            Self::F64 => "f64",
+            Self::C32 => "c32",
+            Self::C64 => "c64",
         }
     }
 }
@@ -226,10 +244,10 @@ impl std::str::FromStr for FaerDType {
     type Err = String;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_ascii_lowercase().as_str() {
-            "u32" => Ok(Self::U32),
-            "u64" => Ok(Self::U64),
-            "i32" => Ok(Self::I32),
-            "i64" => Ok(Self::I64),
+            // "u32" => Ok(Self::U32),
+            // "u64" => Ok(Self::U64),
+            // "i32" => Ok(Self::I32),
+            // "i64" => Ok(Self::I64),
             "f32" => Ok(Self::F32),
             "f64" => Ok(Self::F64),
             "c32" | "complex64" => Ok(Self::C32),
@@ -280,44 +298,7 @@ mod tests {
         assert_eq!(FaerDType::from_str("c32").unwrap(), FaerDType::C32);
         assert_eq!(FaerDType::from_str("c64").unwrap(), FaerDType::C64);
     }
-    #[test]
-    fn test_promotion_i32() {
-        assert_eq!(
-            FaerDType::I32.promote(FaerDType::I32).unwrap(),
-            FaerDType::I32
-        );
-        assert_eq!(
-            FaerDType::I32.promote(FaerDType::I64).unwrap(),
-            FaerDType::I64
-        );
-        assert_eq!(
-            FaerDType::I32.promote(FaerDType::U32).unwrap(),
-            FaerDType::I64
-        );
-        // assert_eq!(
-        //     FaerDType::I32.promote(FaerDType::U64).unwrap(),
-        //     FaerDType::F64
-        // ); // U64 的整数范围超过 I64 的尾数位，无法无损表示
-        assert_eq!(
-            FaerDType::I32.promote(FaerDType::F32).unwrap(),
-            FaerDType::F64
-        );
-        assert_eq!(
-            FaerDType::I32.promote(FaerDType::F64).unwrap(),
-            FaerDType::F64
-        );
-        assert_eq!(
-            FaerDType::I32.promote(FaerDType::C32).unwrap(),
-            FaerDType::C64
-        );
-    }
-    #[test]
-    fn test_promotion_i64() {
-        assert_eq!(
-            FaerDType::I64.promote(FaerDType::I64).unwrap(),
-            FaerDType::I64
-        );
-    }
+
 
     #[test]
     fn test_promotion_f32() {
