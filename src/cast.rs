@@ -1,9 +1,5 @@
 // cast.rs
 
-use crate::{dtype::FaerDType, mat::FaerArray};
-use faer::traits::RealField;
-use faer::{Mat, complex::Complex};
-
 // 针对实数的通用转换 (利用泛型减少重复代码)
 // fn cast_inner<T: RealField + Copy>(src: &FaerArray) -> Mat<T> {
 //     match src {
@@ -15,8 +11,6 @@ use faer::{Mat, complex::Complex};
 //         FaerArray::C64(m) => m.as_ref().map(|&c| polymorphic_cast(c.re)).to_owned(),
 //     }
 // }
-
-
 
 // /// 将 FaerArray 转换为目标 dtype
 // pub fn cast_to(src: &FaerArray, target: FaerDType) -> FaerArray {

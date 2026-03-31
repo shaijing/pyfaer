@@ -2,8 +2,8 @@ from ._faer import *
 
 
 
-float32 = FaerDType.F32
-float64 = FaerDType.F64
+# float32 = FaerDType.F32
+# float64 = FaerDType.F64
 
 
 # __doc__ = _faer.__doc__
